@@ -5,10 +5,19 @@ import core.basesyntax.Storage;
 public class StorageImpl<K, V> implements Storage<K, V> {
     private static final int MAX_ARRAY_SIZE = 10;
 
-    private final Object[] keys = new Object[MAX_ARRAY_SIZE];
-    private final Object[] values = new Object[MAX_ARRAY_SIZE];
+    private final Object[] keys;
+    private final Object[] values;
+    private int size;
 
-    private int size = 0;
+    public StorageImpl() {
+        this.keys = new Object[MAX_ARRAY_SIZE];
+        this.values = new Object[MAX_ARRAY_SIZE];
+        this.size = 0;
+    }
+
+    private boolean keysEqual(Object a, Object b) {
+        return a == null ? b == null : a.equals(b);
+    }
 
     @Override
     public void put(K key, V value) {
@@ -17,9 +26,8 @@ public class StorageImpl<K, V> implements Storage<K, V> {
         }
 
         for (int i = 0; i < size; i++) {
-            // безопасное сравнение ключей через тернарник
-            if (keys[i] == null ? key == null : keys[i].equals(key)) {
-                values[i] = value; // обновляем существующее значение
+            if (keysEqual(keys[i], key)) {
+                values[i] = value;
                 return;
             }
         }
@@ -33,7 +41,7 @@ public class StorageImpl<K, V> implements Storage<K, V> {
     @Override
     public V get(K key) {
         for (int i = 0; i < size; i++) {
-            if (keys[i] == null ? key == null : keys[i].equals(key)) {
+            if (keysEqual(keys[i], key)) {
                 return (V) values[i];
             }
         }
